@@ -1,0 +1,116 @@
+.page-wrapper{
+  background-color: grey;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+.main-card{
+  background-color: white;
+  width: 100%;
+  max-width: 450px;
+  border-radius: 10px;
+  padding: 30px 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+fieldset {      
+    margin-bottom: 10px;
+    margin-right: 10%;
+    margin-left: 10%; 
+    text-align: center;
+    width: 80%;
+    border: 1px solid #888;
+    border-right: none;
+    border-left: none;
+    text-align: center;
+    
+    
+  }
+  label { display: inline-block;}
+  #log{
+    margin-top: 3px;
+    margin-bottom: 30px;
+    font-size: 18px;
+    text-align: center;
+    font-style:initial;
+    color: grey;
+  }
+  h1{
+    margin-top: 0;
+    font-size:50px;
+    text-align: center;
+  }
+  input[type=text], select {
+    width: 80%;
+    display:block;
+    padding: 12px;
+    margin-top: 8px ;
+    margin-right: 10%;
+    margin-left: 10%;
+    border: 1px solid grey;
+    border-radius: 4px;
+    box-sizing: border-box;
+    }
+  .btn1 {
+    margin-top:12px;
+    margin-bottom: 20px;
+    margin-right: 0;
+    margin-left: 0;
+    text-align: center;
+    width: 100%;
+    border: 2px solid grey;
+    border-radius: 5px;
+    padding: 5px;
+  }
+  #account{
+  text-align: center; 
+  margin-bottom: 30px; 
+  }
+  .btn2{
+    width: 80%;
+    text-align: center;
+    margin-top: 30px;
+    margin-bottom: 22px;
+    margin-left:10%;
+    margin-right:10%;
+    border:  none;
+    border-radius: 5px;
+    background-color: blue;
+    color: white;
+    padding: 10px 0;
+  }
+  legend{
+    display: block;
+    font-size: 16px;
+  }
+  #account a{
+    color: blue;
+  }
+  import './login.css'
+export default function login() {
+  return(
+    <>
+    <div className='page-wrapper'>
+      <div className='main-card'>
+    <h1>Welcome Back</h1>
+        <p id='log'>Log in to your account.</p>  
+        <input type="text" id="fname" name="fname" placeholder="Email"/>
+        <input type="text" id="lname" name="lname" placeholder="password"/>
+        <button className="btn2" type="button">Log in</button> 
+    <fieldset>
+        <legend >Or continue with</legend>
+        <button className="btn1" type='button'>
+            continue with google
+        </button>
+    </fieldset>
+    <p id="account">
+      Create have an account?
+      <a href="#">Forgot password?</a>
+    </p>
+    </div>
+    </div>
+   </> 
+  )
+}

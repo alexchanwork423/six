@@ -80,3 +80,40 @@ input[type="checkbox"] {
   cursor: pointer;
   text-align: center;
 }
+
+import './Signup.css'
+function Signup() {
+  return (
+    <div className='page-wrapper'>
+      <div className='main-card'>
+    <div className="signup-container">
+      <h1 className="title">Create Your Account</h1>
+      <form className="signup-form">
+        <label htmlFor="name">Name</label>
+        <input type="text" id="name" placeholder="Name" />
+
+        <label htmlFor="email">Email</label>
+        <input type="text" id="email" placeholder="Email" />
+        <label htmlFor="password">Password</label>
+        <input type="password" id="password" placeholder="Password" />
+        <input
+          type="password"
+          id="confirm"
+          placeholder="Confirm Password"/>
+        <div className="terms">
+          <input type="checkbox" id="term" />
+          <label htmlFor="term">I agree to the Terms and Conditions.</label>
+        </div>
+        <button className="signup-btn" type="submit">
+          Sign up
+        </button>
+        <button className="login-btn" type="button">
+          Already have an account? Log in
+        </button>
+      </form>
+    </div>
+    </div>
+    </div>
+  )
+}
+export default Signup;

@@ -1,5 +1,20 @@
+'use client'
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
+  const router = useRouter();
+  const handleLogin = () => {
+    axios.post('http://localhost:4000/login')
+  .then(response => {
+    if(response.data === true){
+      router.push("/Signup")
+    }
+  })
+  .catch(error => {
+    console.error(error);
+  });
+  }
   return (
     <div className="bg-gray-200 min-h-screen flex justify-center items-center p-4">
       <div className="bg-white w-full max-w-md rounded-lg p-8 shadow-lg">
@@ -17,7 +32,7 @@ export default function Login() {
           type="password"
           placeholder="Password"
           className="w-full mt-4 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"/>
-        <button className="w-full mt-6 py-3 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700 transition">
+        <button  onClick={handleLogin} className="w-full mt-6 py-3 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700 transition">
           Log in
         </button>
         <div className="relative my-6 flex items-center">

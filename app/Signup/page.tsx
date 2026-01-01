@@ -1,4 +1,19 @@
+'use client'
+import axios from "axios";
+import { useRouter } from "next/navigation";
 export default function Signup() {
+  const router = useRouter();
+  const handleSignup = () => {
+    axios.post('http://localhost:4000/Signup')
+  .then(response => {
+    if(response.data === true){
+      router.push("/login")
+    }
+  })
+  .catch(error => {
+    console.error(error);
+  });
+  }
   return (
     <div className="bg-gray-200 min-h-screen flex justify-center items-center p-5">
       <div className="bg-white w-full max-w-[450px] rounded-[10px] px-7.5 py-5 shadow-[0_4px_15px_rgba(0,0,0,0.2)]">
@@ -32,8 +47,8 @@ export default function Signup() {
               <input type="checkbox" id="term" className="mr-2" />
               <label htmlFor="term" className="text-base">I agree to the Terms and Conditions.</label>
             </div>
-            <button
-              type="submit"
+            <button onClick={handleSignup}
+              type="button"
               className="w-full py-3 text-lg text-white bg-blue-700 rounded hover:bg-green-600 mt-3 mb-2">
               Sign up
             </button>

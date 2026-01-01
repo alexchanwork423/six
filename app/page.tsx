@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Album() {
   return (
 
@@ -53,13 +55,16 @@ export default function Album() {
   </svg>
       <span className="hidden min-[600px]:inline">Upload</span>
     </button>
+    
     <div
       className="flex  items-center gap-3" >
-      <img
-        src="/10256349.png"
-        alt="user"
-        className="w-8 h-8 rounded-full"
-      />
+       <Link href={"/login"}>
+        <img 
+          src="/10256349.png"
+          alt="user"
+          className="w-8 h-8 rounded-full"
+        />
+       </Link>
       <span className="hidden min-[600px]:inline">You</span>
     </div>
   </div>

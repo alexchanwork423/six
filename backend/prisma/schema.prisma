@@ -1,14 +1,30 @@
-datasource db {
-  provider = "postgresql"
-}
-
 generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  id    Int    @id @default(autoincrement())
-  email String @unique
-  name  String?
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  password  String
+  createdAt DateTime @default(now())
+  verified  Boolean  @default(false)
+  updatedAt DateTime?
+}
+
+model Image {
+  id          Int      @id @default(autoincrement())
+  title       String
+  filename    String?
+  path        String
+  mimetype    String?
+  description String
+  size        Int?
+  tags        String
+  createdAt   DateTime @default(now())
+}

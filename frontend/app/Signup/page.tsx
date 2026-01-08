@@ -20,7 +20,7 @@ export default function Signup() {
   try {
     const res = await axios.post('http://localhost:4000/auth/signup', { name, email, password });
     alert(res.data.message); // "Check your email to verify your account"
-    router.push('/login');
+    router.push('/verifying');
   } catch (err) {
   console.error(err);
 
@@ -119,7 +119,7 @@ export default function Signup() {
           {/* Login redirect */}
           <button
             type="button"
-            onClick={() => router.push("/login")}
+            onClick={() => router.push("/")}
             className="w-full mt-2 mb-2 text-lg text-blue-600 hover:underline"
           >
             Already have an account? Log in

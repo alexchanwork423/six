@@ -26,7 +26,7 @@ export default function Page() {
         </p>
 
         {/* Action Button */}
-        <button onClick={()=>router.push('/login')}
+        <button onClick={()=>router.push('/')}
           className="w-full border border-gray-300 text-gray-800 text-xl py-3 rounded-lg hover:bg-gray-100 transition"
         >
           Resend Verification Email

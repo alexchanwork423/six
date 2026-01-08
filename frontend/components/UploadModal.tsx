@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react";
+import React, { useState, DragEvent } from "react";
 
 interface UploadModalProps {
   onClose: () => void;
@@ -13,9 +13,42 @@ export default function UploadModal({ onClose, onUploadSuccess }: UploadModalPro
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [dragOver, setDragOver] = useState(false); // for highlighting the drop area
+  const [preview, setPreview] = useState<string | null>(null); // optional image preview
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) setFile(e.target.files[0]);
+    if (e.target.files?.[0]) {
+      const selectedFile = e.target.files[0];
+      setFile(selectedFile);
+      generatePreview(selectedFile);
+    }
+  };
+
+  // Generate preview
+  const generatePreview = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => setPreview(e.target?.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  // Drag events
+  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragOver(true);
+  };
+
+  const handleDragLeave = () => {
+    setDragOver(false);
+  };
+
+  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setDragOver(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const droppedFile = e.dataTransfer.files[0];
+      setFile(droppedFile);
+      generatePreview(droppedFile);
+    }
   };
 
   const handleUpload = async () => {
@@ -32,7 +65,6 @@ export default function UploadModal({ onClose, onUploadSuccess }: UploadModalPro
       const res = await fetch("http://localhost:4000/images/upload", {
         method: "POST",
         body: formData,
-
       });
       const data = await res.json();
       const url = data.url;
@@ -57,11 +89,26 @@ export default function UploadModal({ onClose, onUploadSuccess }: UploadModalPro
         </div>
 
         {/* Drag & Drop or File Input */}
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center text-gray-500 mb-4 cursor-pointer">
+        <div
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          className={`border-2 border-dashed rounded-lg p-6 text-center text-gray-500 mb-4 cursor-pointer
+            ${dragOver ? "border-blue-500 bg-blue-50" : "border-gray-300 bg-white"}`}
+        >
           <label className="cursor-pointer">
             {file ? file.name : "Drag & drop files here or click to upload"}
             <input type="file" className="hidden" onChange={handleFileChange} />
           </label>
+
+          {/* Preview */}
+          {preview && (
+            <img
+              src={preview}
+              alt="preview"
+              className="mt-4 mx-auto max-h-40 object-contain"
+            />
+          )}
         </div>
 
         {/* Form */}

@@ -1,159 +1,88 @@
-'use client';
+'use client'
+import { useState } from 'react'
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import UploadModal from "@/components/UploadModal";
-import ImageDetailModal from "@/components/ImageDetailModal";
+export default function Login() {
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-interface ImageItem {
-  id: number;
-  title: string;
-  description: string;
-  tags: string;
-  url: string;
-}
+  const handleLogin = async () => {
+    try {
+      const res = await axios.post(
+        'http://localhost:4000/auth/login',
+        { email, password }
+      );
 
-export default function Album() {
-  const [allImages, setAllImages] = useState<ImageItem[]>([]);
-  const [filteredImages, setFilteredImages] = useState<ImageItem[]>([]);
-  const [images, setImages] = useState<ImageItem[]>([]);
-  const [selectedImage, setSelectedImage] = useState<ImageItem | null>(null);
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [showUpload, setShowUpload] = useState(false);
+      // If backend returns 200 → authenticated
+      alert('Authenticated ✅');
+      router.push('/album');
 
-  const loader = useRef<HTMLDivElement | null>(null);
-  const isLoading = useRef(false);
-  const perPage = 8;
-
-  async function fetchImages(pageMultiplier = 1) {
-    const res = await fetch("http://localhost:4000/images");
-
-    if (!res.ok) {
-      console.error(await res.text());
-      return;
+    } catch (error) {
+      alert('Authentication failed ❌');
     }
-
-    const data: ImageItem[] = await res.json();
-    setAllImages(data);
-    setFilteredImages(data);
-    setImages(data.slice(0, pageMultiplier * perPage));
-  }
-
-  useEffect(() => {
-    fetchImages().catch(console.error);
-  }, []);
-
-  // SEARCH
-  useEffect(() => {
-    const q = search.toLowerCase();
-    const result = allImages.filter((img) =>
-      img.title.toLowerCase().includes(q) ||
-      img.description.toLowerCase().includes(q) ||
-      img.tags.toLowerCase().includes(q)
-    );
-
-    setFilteredImages(result);
-    setPage(1);
-    setImages(result.slice(0, perPage));
-  }, [search, allImages]);
-
-  // PAGINATION
-  useEffect(() => {
-    setImages(filteredImages.slice(0, page * perPage));
-    isLoading.current = false;
-  }, [page, filteredImages]);
-
-  // INFINITE SCROLL
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (
-          entries[0].isIntersecting &&
-          images.length < filteredImages.length &&
-          !isLoading.current
-        ) {
-          isLoading.current = true;
-          setPage((p) => p + 1);
-        }
-      },
-      { rootMargin: "100px" }
-    );
-
-    if (loader.current) observer.observe(loader.current);
-    return () => observer.disconnect();
-  }, [images, filteredImages]);
+  };
 
   return (
-    <div className="bg-gray-100 min-h-screen p-5 flex justify-center">
-      <div className="bg-white w-full max-w-[1200px] rounded shadow">
+    <div className="bg-gray-200 min-h-screen flex justify-center items-center p-4">
+      <div className="bg-white w-full max-w-md rounded-lg p-8 shadow-lg">
+        <h1 className="text-4xl font-bold text-center text-gray-800">
+          Welcome Back
+        </h1>
 
-        {/* HEADER */}
-        <header className="flex items-center justify-between h-16 px-5 border-b">
-          <div className="font-semibold">Album</div>
+        <p className="mt-2 text-center text-gray-600 text-base">
+          Log in to your account.
+        </p>
 
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search..."
-            className="hidden min-[600px]:block w-full max-w-[400px] px-3 py-2 border rounded"
-          />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full mt-6 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
 
-          <div className="flex gap-3">
-            <button
-              onClick={() => setShowUpload(true)}
-              className="px-3 py-1.5 border rounded"
-            >
-              Upload
-            </button>
-            <Link href="/login">
-              <img src="/10256349.png" className="w-8 h-8 rounded-full" />
-            </Link>
-          </div>
-        </header>
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full mt-4 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
 
-        {/* GRID */}
-        <div className="flex flex-wrap px-1">
-          {Array.from({ length: 4 }).map((_, col) => (
-            <div
-              key={col}
-              className="w-1/4 px-1 max-[800px]:w-1/2 max-[600px]:w-full"
-            >
-              {images
-                .filter((_, i) => i % 4 === col)
-                .map((img) => (
-                  <img
-                    key={img.id}
-                    src={img.url}
-                    className="mt-2 w-full rounded cursor-pointer"
-                    onClick={() => setSelectedImage(img)}
-                  />
-                ))}
-            </div>
-          ))}
+        <button
+          onClick={handleLogin}
+          className="w-full mt-6 py-3 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700 transition"
+        >
+          Log in
+        </button>
+
+        <div className="relative my-6 flex items-center">
+          <div className="flex-grow border-t border-gray-300"></div>
+          <span className="mx-2 text-gray-500">Or continue with</span>
+          <div className="flex-grow border-t border-gray-300"></div>
         </div>
 
-        <div ref={loader} className="py-5 text-center text-gray-500">
-          {images.length < filteredImages.length
-            ? "Loading more..."
-            : "No more images"}
-        </div>
+        <button
+          className="w-full py-3 border border-gray-400 rounded-md hover:bg-gray-100 transition"
+          onClick={() =>
+            window.location.href = 'http://localhost:4000/auth/google'
+          }
+        >
+          Continue with Google
+        </button>
+
+        <p className="mt-6 text-center text-gray-600 text-sm">
+          Don&apos;t have an account?{" "}
+          <button
+            onClick={() => router.push("/signup")}
+            className="text-blue-600 hover:underline"
+          >
+            Sign up
+          </button>
+        </p>
       </div>
-
-      {showUpload && (
-        <UploadModal
-          onClose={() => setShowUpload(false)}
-          onUploadSuccess={() => fetchImages(page)}
-        />
-      )}
-
-      {selectedImage && (
-        <ImageDetailModal
-          image={selectedImage}
-          onClose={() => setSelectedImage(null)}
-          onUpdated={() => fetchImages(page)}
-        />
-      )}
     </div>
   );
 }

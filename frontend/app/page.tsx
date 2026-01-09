@@ -1,28 +1,34 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
+
 export default function Login() {
+  
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
-    try {
-      const res = await axios.post(
-        'http://localhost:4000/auth/login',
-        { email, password }
-      );
+  try {
+    const res = await axios.post('http://localhost:4000/auth/login', { email, password });
 
-      // If backend returns 200 → authenticated
+    if (res.data.success) {
+      // Only store token or user info if login was successful
+      localStorage.setItem('token', JSON.stringify(res.data.token));
       alert('Authenticated ✅');
       router.push('/album');
-
-    } catch (error) {
-      alert('Authentication failed ❌');
+    } else {
+      alert(`Authentication failed ❌\n${res.data.message}`);
     }
-  };
+
+  } catch (error) {
+    console.error(error);
+    alert('Server error ❌');
+  }
+};
+
 
   return (
     <div className="bg-gray-200 min-h-screen flex justify-center items-center p-4">
@@ -76,7 +82,7 @@ export default function Login() {
         <p className="mt-6 text-center text-gray-600 text-sm">
           Don&apos;t have an account?{" "}
           <button
-            onClick={() => router.push("/signup")}
+            onClick={() => router.push("/Signup")}
             className="text-blue-600 hover:underline"
           >
             Sign up

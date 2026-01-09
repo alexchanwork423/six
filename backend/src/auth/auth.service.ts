@@ -4,7 +4,7 @@ import { MailService } from '../mail/mail.service';
 import { generateVerificationToken, verifyToken } from './jwt-utils';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-
+import * as jwt from 'jsonwebtoken';
 @Injectable()
 export class AuthService {
   constructor(
@@ -27,6 +27,7 @@ createToken(user) {
     });
 
     const token = generateVerificationToken(email);
+    const expiration = new Date(Date.now() + 1 * 60 * 1000);
     console.log(token)
     await this.mailService.sendVerificationEmail(email, token);
 
@@ -58,16 +59,23 @@ createToken(user) {
 
   // Login
   async login(email: string, password: string) {
-    const user = await this.prisma.user.findUnique({ where: { email } });
-    if (!user) return { success: false, message: 'Invalid email or password' };
+  const user = await this.prisma.user.findUnique({ where: { email } });
+  if (!user) return { success: false, message: 'Invalid email or password' };
+  if (!user.verified) return { success: false, message: 'Email not verified' };
 
-    if (!user.verified) return { success: false, message: 'Email not verified' };
+  const isValid = await bcrypt.compare(password, user.password);
+  if (!isValid) return { success: false, message: 'Invalid email or password' };
 
-    const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) return { success: false, message: 'Invalid email or password' };
+  // Generate JWT
+ const secret = process.env.JWT_SECRET;
+if (!secret) throw new Error('JWT_SECRET is not defined');
 
-    return { success: true, message: 'Login successful', user: { id: user.id, name: user.name, email: user.email } };
-  }
+const token = jwt.sign({ id: user.id, email: user.email }, secret, {
+  expiresIn: '1h',
+});
+
+  return { success: true, message: 'Login successful', token, user: { id: user.id, name: user.name, email: user.email } };
+}
   async googleLogin(googleUser) {
     if (!googleUser) {
       throw new Error('No user from Google');

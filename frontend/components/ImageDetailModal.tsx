@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 export interface ImageItem {
   id: number;
@@ -105,7 +106,7 @@ export default function ImageDetailModal({
       });
 
       if (!res.ok) throw new Error("Delete failed");
-
+      
       onUpdated?.();
       handleClose();
     } catch {
@@ -116,26 +117,11 @@ export default function ImageDetailModal({
   };
 
   // ✅ FORCE DOWNLOAD (browser default Downloads folder)
-  const handleDownload = async () => {
-    try {
-      const response = await fetch(image.url);
-      const blob = await response.blob();
+ const handleDownload = () => {
+  window.location.href = `http://localhost:4000/images/${image.id}/download`;
+};
 
-      const blobUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
 
-      link.href = blobUrl;
-      link.download = `${image.title || "image"}.jpg`;
-
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      window.URL.revokeObjectURL(blobUrl);
-    } catch {
-      alert("Download failed");
-    }
-  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -177,20 +163,26 @@ export default function ImageDetailModal({
         <div className="w-[280px] bg-zinc-900 p-4 flex flex-col justify-between">
           <div>
             <h2 className="text-xl font-semibold mb-3">Image Details</h2>
-
+            <label className="block text-sm text-zinc-400 mb-1">
+                Title
+              </label>
             <input
               value={title}
               onChange={e => setTitle(e.target.value)}
               className="w-full bg-zinc-800 border border-zinc-700 p-2 rounded mb-2"
             />
-
+            <label className="block text-sm text-zinc-400 mb-1">
+                Description
+              </label>
             <textarea
               value={description}
               onChange={e => setDescription(e.target.value)}
               className="w-full bg-zinc-800 border border-zinc-700 p-2 rounded mb-2"
               rows={3}
             />
-
+            <label className="block text-sm text-zinc-400 mb-1">
+                Tags
+              </label>
             <input
               value={tags}
               onChange={e => setTags(e.target.value)}
